@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<unload unload_date="2016-12-23 19:05:25">
+<sp_widget action="INSERT_OR_UPDATE">
+<client_script><![CDATA[function ($scope, $window) 
+{
+	var c = this;
+
+	$scope.$on("$sp.service_catalog.cart.update", function() {
+		$scope.server.update().then(function() {
+			$scope.$emit("$sp.service_catalog.cart.count", getItemCount());
+		});
+	});
+	
+	c.requestedFor = {
+		displayValue: c.data.cart.requested_for_display_name,
+		value: c.data.cart.requested_for,
+		name: 'requested_for'
+	};
+
+	c.changed = function(a) {                          
+        c.server.get(c.requestedFor).then(function() {          
+            $window.location.reload();          
+        });
+	};
+	
+
+	$scope.$on("field.change", function(evt, parms) {
+		if (parms.field.name == 'requested_for')
+			c.data.cart.requested_for = parms.newValue;
+	});
+}]]></client_script>
+<controller_as>c</controller_as>
+<css>.hol.req_for
+{
+	display: block !important;
+	padding-bottom: 20px;
+}
+
+.hol.rec-picker
+{
+	width: 75% !important;
+	display: inline-block !important;
+}
+
+.hol.submit-btn
+{
+	width: 20% !important;
+	display: inline-block !important;
+}
+</css>
+<data_table>sp_instance</data_table>
+<demo_data>{
+	"cartTemplate": "hlc_requested_for.html"
+}</demo_data>
+<description/>
+<docs display_value=""/>
+<field_list>color</field_list>
+<has_preview>false</has_preview>
+<id>hl-requested-for</id>
+<internal>false</internal>
+<link/>
+<name>[HLC] Requested For</name>
+<option_schema>[{"name":"cartTemplate","label":"Cart Template","type":"string"}]</option_schema>
+<public>false</public>
+<roles/>
+<script><![CDATA[(function(){	
+	var userID = gs.getUser().getID();
+	var cart = new SPCart(input.cartName, userID);
+	data.cart = cart;
+	if(input) 
+	{
+		cart.setRequestedFor(input.value);
+	}
+	
+	data.cart = cart.getCartObj();
+})();
+]]></script>
+<servicenow>false</servicenow>
+<sys_class_name>sp_widget</sys_class_name>
+<sys_created_by>mbenitez</sys_created_by>
+<sys_created_on>2016-12-13 22:53:45</sys_created_on>
+<sys_customer_update>true</sys_customer_update>
+<sys_id>b521a7af37a76200cb9a341643990e2b</sys_id>
+<sys_mod_count>33</sys_mod_count>
+<sys_name>[HLC] Requested For</sys_name>
+<sys_package display_value="Global">global</sys_package>
+<sys_policy/>
+<sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+<sys_scope display_value="Global">global</sys_scope>
+<sys_update_name>sp_widget_b521a7af37a76200cb9a341643990e2b</sys_update_name>
+<sys_updated_by>mbenitez</sys_updated_by>
+<sys_updated_on>2016-12-14 00:40:57</sys_updated_on>
+<template><![CDATA[<div class="panel panel-primary b hidden-xs hol req_for"> 
+	<div class="panel-heading"> 
+		<h4 class="panel-title ng-binding"><i ng-if="options.glyph" class="fa fa-{{options.glyph}} m-r"></i>${Requested For}</h4> 
+	</div> 
+	<div class="panel-body"> 
+        <sn-record-picker 
+			class="hol rec-picker"
+			field="c.requestedFor" 
+            table="'sys_user'" 
+            display-field="'name'" 
+            value-field="'sys_id'" 
+            search-fields="'name'" 
+            page-size="100"
+			default-query="'active=true^user_nameISNOTEMPTY^emailISNOTEMPTY^nameISNOTEMPTY'">
+        </sn-record-picker>
+        <button class="btn btn-default hol submit-btn" ng-click="c.changed()">Apply</button> 
+	</div> 
+</div>]]></template>
+</sp_widget>
+</unload>
